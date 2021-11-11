@@ -7,15 +7,22 @@ from netmiko.ssh_exception import AuthenticationException
 username = input('insert username ====> : ')
 password = getpass.getpass('insert pssword ===> :')
 
+
+#in this step you have to create files contain config   
+#and read the content file
+
 with open('biglabcommandSwitch') as fileswitch:
     filswitch = fileswitch.read().splitlines()
 
 with open('biglabCommandrouter') as fileRouter:
     filerouter = fileRouter.read().splitlines()
 
-with open('biglabip') as fielIp:
+    #contain ip of devices
+    
+with open('biglabip') as fielIp:  
     file_ip = fielIp.read().splitlines()
 
+    
 for ip_address in file_ip:
     print('in_start_is_'+ip_address)
 
@@ -27,6 +34,9 @@ for ip_address in file_ip:
         'username': username,
         'password': password
     }
+    
+# fucntion connect of netmiko
+        
     try:
         connect_device = ConnectHandler(**cisco_type)
     except(AuthenticationException):
@@ -45,6 +55,7 @@ for ip_address in file_ip:
         print("strange error"+ unknow_error)
         continue
 
+        # here need to erite your ios versios .. is depends you!!
 lisl_version_ios = {
     'vios-adventerprisek9-m',
     'VIOS-adventerprisek9',
