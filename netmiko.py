@@ -52,7 +52,7 @@ for ip_address in file_ip:
         print('ssh issue'+ip_all_device)
         continue
     except Exception as unknow_error:
-        print("strange error"+ unknow_error)
+        print("uncknow error"+ unknow_error)
         continue
 
         # here need to erite your ios versios .. is depends you!!
