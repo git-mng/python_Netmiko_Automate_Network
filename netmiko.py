@@ -35,7 +35,7 @@ for ip_address in file_ip:
         'password': password
     }
     
-# fucntion connect of netmiko
+# function create connection
         
     try:
         connect_device = ConnectHandler(**cisco_type)
