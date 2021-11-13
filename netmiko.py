@@ -7,24 +7,17 @@ from netmiko.ssh_exception import AuthenticationException
 username = input('insert username ====> : ')
 password = getpass.getpass('insert pssword ===> :')
 
-
-#in this step you have to create files contain config   
-#and read the content file
-
 with open('biglabcommandSwitch') as fileswitch:
     filswitch = fileswitch.read().splitlines()
 
 with open('biglabCommandrouter') as fileRouter:
     filerouter = fileRouter.read().splitlines()
 
-    #contain ip of devices
-    
-with open('biglabip') as fielIp:  
+with open('biglabip') as fielIp:
     file_ip = fielIp.read().splitlines()
 
-    
 for ip_address in file_ip:
-    print('in_start_is_'+ip_address)
+    print('in_start_is_' + ip_address)
 
     ip_all_device = ip_address
 
@@ -34,58 +27,60 @@ for ip_address in file_ip:
         'username': username,
         'password': password
     }
-    
-# function create connection
-        
     try:
         connect_device = ConnectHandler(**cisco_type)
-    except(AuthenticationException):
-        print('authentication failure'+ip_all_device)
+    except AuthenticationException:
+        print('authentication failure{0}'.format(ip_all_device))
         continue
-    except(NetmikoTimeoutException):
-        print('time out to device'+ip_all_device)
+    except NetmikoTimeoutException:
+        print('time out to device' + ip_all_device)
         continue
-    except(EOFError):
-        print('end of file attempting device'+ip_all_device)
+    except EOFError:
+        print('end of file attempting device' + ip_all_device)
         continue
-    except(SSHException):
-        print('ssh issue'+ip_all_device)
+    except SSHException:
+        print('ssh issue' + ip_all_device)
         continue
     except Exception as unknow_error:
-        print("uncknow error"+ unknow_error)
+        print("strange error" + str(unknow_error))
         continue
+    print(connect_device)
 
-        # here need to erite your ios versios .. is depends you!!
-lisl_version_ios = {
-    'vios-adventerprisek9-m',
-    'VIOS-adventerprisek9',
-    'C1900-UNIVERSALK9-M',
-    'C3570-ADVIPSERVICESK9-M',
-}
-out_find = 0
-for check_ver_software in lisl_version_ios:
-    print('llist_version'+check_ver_software)
+    lisl_version_ios = {
+        'vios-adventerprisek9-m',
+        'VIOS-adventerprisek9',
+        'C1900-UNIVERSALK9-M',
+        'C3570-ADVIPSERVICESK9-M',
+    }
+    out_find = 0
+    for check_ver_software in lisl_version_ios:
+        print('llist_version' + check_ver_software)
+        output_command = connect_device.send_command('show version')
+        out_find = output_command.find(check_ver_software)
 
-    output_command = connect_device.send_command('show version')
-    out_find = output_command.find(check_ver_software)
+        if out_find > 0:
+            print('software version found ' + check_ver_software)
+            break
+        else:
+            print('softawre version not found' + check_ver_software)
 
-    if out_find > 0:
-        print('software version found '+check_ver_software)
-        break
-    else:
-        print('softawre version not found'+check_ver_software)
+        if check_ver_software == 'vios-adventerprisek9-m':
+            print('running' + check_ver_software + 'commands')
+            output = connect_device.send_config_set(fileswitch)
 
-    if check_ver_software == 'vios-adventerprisek9-m':
+        elif check_ver_software == 'VIOS-adventerprisek9':
+            print('running' + check_ver_software + 'commands')
+            output = connect_device.send_config_set(fileRouter)
 
-        print('running' + check_ver_software + 'commands')
-        output = connect_device.send_config_set(fileswitch)
+        elif check_ver_software == 'C1900-UNIVERSALK9-M':
+            output = ('running' + check_ver_software + 'commands')
+            print(output)
 
-    elif check_ver_software == 'VIOS-adventerprisek9':
+        elif check_ver_software == 'C3570-ADVIPSERVICESK9-M':
+            output = ('running' + check_ver_software + 'commands')
+            print(output)
 
-        print('running'+check_ver_software+'commands')
-        output = connect_device.send_config_set(fileRouter)
 
-        print(output)
 
 
 
